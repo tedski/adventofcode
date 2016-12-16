@@ -6,21 +6,18 @@ def course_change(turn, heading):
     heading += turns[turn]
     return (heading + 360) % 360
 
-def move(cur_pos, heading, distance):
-    """given a position in a cartesian plane (x,y), a heading (0-360), 
-    and a distance (int), return the new position in the cartesian plane."""
+def move(cur_pos, heading):
+    """given a position in a cartesian plane (x,y) and a heading (0-360), 
+    return the new position in the cartesian plane."""
     x, y = cur_pos
-    if (heading / 90) % 2:
-        if heading == 270:
-            x -= distance
-        else:
-            x += distance
-    else:
-        if heading == 180:
-            y -= distance
-        else:
-            y += distance
-    return (x, y)
+    destination = {
+            0: (x, y+1),
+            90: (x+1, y),
+            180: (x, y-1),
+            270: (x-1, y),
+            360: (x, y+1)
+        }
+    return destination[heading]
 
 if __name__ == "__main__":
 
@@ -32,12 +29,31 @@ if __name__ == "__main__":
     # Where we landed, facing north
     heading = 0 
     position = (0, 0)
+    visited = [(0,0)]
+    hq = None
 
-    # Part 1
-    for step in directions:
-        heading = course_change(step[0], heading)
-        position = move(position, heading, step[1])
+    for instruction in directions:
+        turn, distance = instruction
+        heading = course_change(turn, heading)
+        for step in range(distance):
+            position = move(position, heading)
+            if hq:
+                continue
+            elif position in visited:
+                hq = position
+            else:
+                visited.append(position)
 
     x, y = position
+    xhq, yhq = hq
 
-    print 'Part 1: You are {} blocks away from Easter Bunny HQ.'.format(abs(x+y))
+    def taxidist(start, end):
+        p1, p2 = start
+        q1, q2 = end
+        return abs(p1-q1)+abs(p2-q2)
+
+    part1dist = taxidist((0,0), position)
+    part2dist = taxidist((0,0), hq)
+
+    print 'Part 1: You are {} blocks away from Easter Bunny HQ.'.format(part1dist)
+    print 'Part 2: You are {} blocks away from the real EB HQ.'.format(part2dist)
