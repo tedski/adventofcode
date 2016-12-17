@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 if __name__ == "__main__":
     
@@ -10,9 +11,18 @@ if __name__ == "__main__":
         ]
 
     keypad = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
-
     position = (1, 1)
     code = []
+
+    position_pt2 = (2, 0)
+    code_pt2 = []
+    keypad_pt2 = [
+            [None, None, 1, None, None],
+            [None, 2, 3, 4, None],
+            [5, 6, 7, 8, 9],
+            [None, 'A', 'B', 'C', None],
+            [None, None, 'D', None, None],
+        ]
 
     def getnewpos(direction):
         moves = {
@@ -24,6 +34,7 @@ if __name__ == "__main__":
         return moves[direction]
 
     for sequence in puzzle_input:
+        # Part 1
         for instruction in list(sequence):
             row, col = position
             new_pos = getnewpos(instruction)
@@ -35,4 +46,18 @@ if __name__ == "__main__":
         else:
            code.append(keypad[position[0]][position[1]])
 
-    print 'The bathroom code is: {}'.format(''.join(map(str, code)))
+        # Part 2
+        for instruction in list(sequence):
+            row, col = position_pt2
+            new_pos_pt2 = getnewpos(instruction)
+
+            if new_pos_pt2[0] > 4 or new_pos_pt2[0] < 0 or new_pos_pt2[1] > 4 or new_pos_pt2[1] < 0:
+                continue
+            elif keypad_pt2[new_pos_pt2[0]][new_pos_pt2[1]] is None:
+                continue
+            position_pt2 = new_pos_pt2
+        else:
+            code_pt2.append(keypad_pt2[position_pt2[0]][position_pt2[1]])
+
+    print 'Part 1: The bathroom code is: {}'.format(''.join(map(str, code)))
+    print 'Part 2: The real code is: {}'.format(''.join(map(str, code_pt2)))
