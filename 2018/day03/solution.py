@@ -1,6 +1,6 @@
 import os
 from collections import Counter
-from typing import List
+from typing import List, Set, Tuple
 
 curdir = os.path.dirname(os.path.abspath(__file__))
 input_file = os.path.join(curdir, 'input.txt')
@@ -21,7 +21,23 @@ def get_points(claim: str) -> List[tuple]:
     return points
 
 
-def overlap_checker(claims: list) -> int:
+def find_isolated_claim(claims: List[str], overlap_points: Set[Tuple[int, int]]):
+    for claim in claims:
+        points = get_points(claim)
+
+        overlap = False
+        for point in points:
+            if point in overlap_points:
+                overlap = True
+                break
+        
+        if not overlap:
+            claimid, _, _, _ = claim.split()
+
+    return claimid.lstrip('#')
+
+
+def overlap_checker(claims: List[str]) -> int:
     used_points = set()
     overlap_points = set()
     for claim in claims:
@@ -34,20 +50,7 @@ def overlap_checker(claims: list) -> int:
             else:
                 used_points.add(point)
 
-    for claim in claims:
-        points = get_points(claim)
-
-        overlap = False
-        for point in points:
-            if point in overlap_points:
-                overlap = True
-                break
-        
-        if not overlap:
-            claimid, _, _, _ = claim.split()
-            no_overlap_claim = claimid.lstrip('#')
-
-    return len(overlap_points), no_overlap_claim
+    return len(overlap_points), find_isolated_claim(claims, overlap_points)
 
 
 def test_get_points():
