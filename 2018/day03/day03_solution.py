@@ -4,7 +4,6 @@ from typing import List, Set, Tuple
 
 curdir = os.path.dirname(os.path.abspath(__file__))
 input_file = os.path.join(curdir, 'input.txt')
-
 with open(input_file, 'r') as fp:
     puzzle_input = fp.read().splitlines()
 
