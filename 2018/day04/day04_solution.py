@@ -1,7 +1,7 @@
 from collections import Counter
 import os
 import re
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 
 curdir = os.path.dirname(os.path.abspath(__file__))
@@ -10,7 +10,7 @@ with open(input_file, 'r') as fp:
     puzzle_input = fp.read().splitlines()
 
 
-def predictable_guard(guard_logs: List[str]) -> Tuple[int, int]:
+def predictable_guard(guard_logs: List[str]) -> Dict[int, Tuple[int, int]]:
     guard_logs.sort()
 
     sleep_account = {}
@@ -35,13 +35,22 @@ def predictable_guard(guard_logs: List[str]) -> Tuple[int, int]:
             for minute in range(start_minute, stop_minute):
                 sleep_account[guard_on_duty].update({minute: 1})
     
-    sleepiest_guard_id = max(sleep_account, key=lambda key: sum(sleep_account[key].values()))
-    frequent_minute = sleep_account[sleepiest_guard_id].most_common(1)[0][0]
+    strategy1_guard_id = max(sleep_account, key=lambda key: sum(sleep_account[key].values()))
+    strategy1_minute = sleep_account[strategy1_guard_id].most_common(1)[0][0]
+
+    strategy2_guard_id = max(sleep_account,
+                             key=(lambda key: sleep_account[key].most_common(1)[0][1]
+                                              if sum(sleep_account[key].values()) else 0))
+    strategy2_minute = sleep_account[strategy2_guard_id].most_common(1)[0][0]
     
-    return int(sleepiest_guard_id.lstrip('#')), frequent_minute
+    return_data = {
+        1: (int(strategy1_guard_id.lstrip("#")), strategy1_minute),
+        2: (int(strategy2_guard_id.lstrip("#")), strategy2_minute)
+    }
+    return return_data
 
 
-def test_prediction():
+def test_strategies():
     guard_logs = [
      '[1518-11-01 00:00] Guard #10 begins shift',
      '[1518-11-01 00:25] wakes up',
@@ -61,8 +70,10 @@ def test_prediction():
      '[1518-11-05 00:45] falls asleep',
      '[1518-11-05 00:55] wakes up',
     ]
-    assert predictable_guard(guard_logs) == (10, 24)
+    assert predictable_guard(guard_logs) == {1: (10, 24), 2: (99, 45)}
 
 if __name__ == "__main__":
-    guard_id, minute = predictable_guard(puzzle_input)
-    print(f'Guard {guard_id} sleeps for {minute}, giving an answer of: {guard_id * minute}')
+    predictions = predictable_guard(puzzle_input)
+    for strategy, prediction in predictions.items():
+        print(f'Strategy {strategy}: Guard {prediction[0]} sleeps for {prediction[1]}, giving an answer of: '
+            f'{prediction[0] * prediction[1]}')
