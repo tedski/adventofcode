@@ -75,5 +75,5 @@ def test_strategies():
 if __name__ == "__main__":
     predictions = predictable_guard(puzzle_input)
     for strategy, prediction in predictions.items():
-        print(f'Strategy {strategy}: Guard {prediction[0]} sleeps for {prediction[1]}, giving an answer of: '
+        print(f'Strategy {strategy}: Guard {prediction[0]} sleeps most during minute {prediction[1]}, giving an answer of: '
             f'{prediction[0] * prediction[1]}')
