@@ -21,7 +21,7 @@ def get_points(claim: str) -> List[tuple]:
     return points
 
 
-def overlap_count(claims: list) -> int:
+def overlap_checker(claims: list) -> int:
     used_points = set()
     overlap_points = set()
     for claim in claims:
@@ -33,8 +33,21 @@ def overlap_count(claims: list) -> int:
                 overlap_points.add(point)
             else:
                 used_points.add(point)
+
+    for claim in claims:
+        points = get_points(claim)
+
+        overlap = False
+        for point in points:
+            if point in overlap_points:
+                overlap = True
+                break
         
-    return len(overlap_points)
+        if not overlap:
+            claimid, _, _, _ = claim.split()
+            no_overlap_claim = claimid.lstrip('#')
+
+    return len(overlap_points), no_overlap_claim
 
 
 def test_get_points():
@@ -49,8 +62,10 @@ def test_overlap_points():
     claims = ['#1 @ 1,3: 4x4',
               '#2 @ 3,1: 4x4',
               '#3 @ 5,5: 2x2']
-    assert overlap_count(claims) == 4
+    assert overlap_checker(claims) == (4, '3')
 
     
 if __name__ == '__main__':
-    print(f'square inches of fabric within two or more claims: {overlap_count(puzzle_input)}')
+    count, good_claim = overlap_checker(puzzle_input)
+    print(f'Square inches of fabric within two or more claims: {count}')
+    print(f'Santa\'s suit can be made with claim: {good_claim}')
