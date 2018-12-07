@@ -1,5 +1,5 @@
 import os
-import re
+from string import ascii_lowercase
 
 curdir = os.path.dirname(os.path.abspath(__file__))
 input_file = os.path.join(curdir, 'input.txt')
@@ -8,23 +8,14 @@ with open(input_file, 'r') as fp:
 
 
 def reactor(polymer: str) -> str:
-    unit_pattern = re.compile(r'((\w)(\2))', re.IGNORECASE)
-    polarity_pattern = re.compile(r'(\w)(?!\1)')
-    unit_matches = unit_pattern.findall(polymer)
-    product = ''
-    changes = False
-
-    for unit_match in unit_matches:
-        reactant = unit_match[0]
-        if polarity_pattern.search(reactant):
-            product = re.sub(reactant, '', polymer)
-            changes = True
+    changes = True
+    while changes:
+        starting_length = len(polymer)
+        for letter in ascii_lowercase:
+            polymer = polymer.replace(letter + letter.upper(), '').replace(letter.upper() + letter, '')
+            changes = starting_length != len(polymer)
     
-    if changes:
-        return reactor(product)
-    else:
-        return polymer
-
+    return polymer
 
 
 def test_reactor():
